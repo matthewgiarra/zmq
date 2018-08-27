@@ -9,10 +9,36 @@
 #
 
 import zmq
+from zmq import ssh
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os
 import ipdb as pdb
+import argparse
+from getpass import getuser
+import socket
+
+# Get some defaults
+default_username = getuser()
+default_hostname = socket.gethostbyname(socket.gethostname())
+
+# Instantiate the argument parser
+parser = argparse.ArgumentParser()
+
+# Add some arguments
+parser.add_argument("--user", type=str,default=default_username, help="User name for ssh (default: %s)" % default_username)
+parser.add_argument("--host", type=str, default=default_hostname, help = "host name for ssh (default: %s)" % default_hostname)
+parser.add_argument("--socket", type=int, default = 5555, help = "socket number (default: 5555)")
+
+# Parse the arguments
+args = parser.parse_args()
+username = args.user
+hostname = str(args.host)
+socket_num  = args.socket
+
+# String for SSH to user name and host name
+userhost = "%s@%s" % (username, hostname)
+tcp_str = "tcp://localhost:%d" % socket_num
 
 context = zmq.Context()
 
@@ -22,7 +48,10 @@ print("Connecting to hello world server…")
 # Create the socket 
 # zmq.REQ means set the socket type to "request"
 socket = context.socket(zmq.REQ)
-socket.connect("tcp://localhost:5555")
+
+# Tunnel connection
+ssh.tunnel_connection(socket, tcp_str, userhost)
+# socket.connect("tcp://localhost:5555")
 
 while True:
 
