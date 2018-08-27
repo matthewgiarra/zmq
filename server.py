@@ -4,6 +4,7 @@ import time
 import zmq
 from urllib.request import urlretrieve
 import argparse
+import ipdb as pdb
 
 # Instantiate an argument parser
 parser = argparse.ArgumentParser()
@@ -28,7 +29,10 @@ socket.bind("tcp://*:%d" % socket_num)
 cat_url="http://media.boingboing.net/wp-content/uploads/2017/03/surprised-cat-04.jpg"
 dog_url="https://www.lukor.net/wp-content/uploads/2017/07/surprised-looking-dog_1600.jpg"
 
-while True:
+keepalive = True
+
+while keepalive is True:
+    
     #  Wait for next request from client
     message = socket.recv().decode('ascii').lower()
     print("Received request: %s" % message)
@@ -37,6 +41,9 @@ while True:
         url = cat_url
     elif message.lower() == 'dog':
        url = dog_url
+    elif message.lower() == 'exit':
+        keepalive = False
+        url=''      
     else:
         url = ''
         outpath = ''

@@ -53,10 +53,16 @@ socket = context.socket(zmq.REQ)
 ssh.tunnel_connection(socket, tcp_str, userhost)
 # socket.connect("tcp://localhost:5555")
 
-while True:
+# Alive
+keepalive = True
+
+while keepalive is True:
 
     # Get some input
     classname = input("Class name: ").lower()
+    
+    if classname == "exit":
+        keepalive = False
     
     # Request name
     request = classname.encode('ascii')
@@ -69,7 +75,7 @@ while True:
     
     # Print the reply
     print("Received reply: %s" % message)
-   
+       
     # Load the image if it's there
     if not(message == ""):
 
