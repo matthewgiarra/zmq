@@ -1,17 +1,30 @@
-#
-#   Hello World server in Python
-#   Binds REP socket to tcp://*:5555
-#   Expects b"Hello" from client, replies with b"World"
-#
+# Server inter-process communication in Python
 
 import time
 import zmq
 from urllib.request import urlretrieve
+import argparse
 
+# Instantiate an argument parser
+parser = argparse.ArgumentParser()
+
+# Add some arguments
+parser.add_argument("--socket", type=int, default = 5555, help = "socket number (default: 5555)")
+
+# Parse the arguments
+args = parser.parse_args()
+socket_num = args.socket
+
+# Instantiate the context
 context = zmq.Context()
-socket = context.socket(zmq.REP)
-socket.bind("tcp://*:5555")
 
+# Define the socket type
+socket = context.socket(zmq.REP)
+
+# Bind to the socket
+socket.bind("tcp://*:%d" % socket_num)
+
+# Define some URLs for testing.
 cat_url="http://media.boingboing.net/wp-content/uploads/2017/03/surprised-cat-04.jpg"
 dog_url="https://www.lukor.net/wp-content/uploads/2017/07/surprised-looking-dog_1600.jpg"
 
